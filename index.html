@@ -2,50 +2,97 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>My Map - 5 Layers</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rwanda Map Data, Interactive Outputs</title>
 <style>
   body {
-    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
-    background: #0f172a; color: #e2e8f0;
-    display: flex; align-items: center; justify-content: center;
-    min-height: 100vh; margin: 0; padding: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    max-width: 780px;
+    margin: 60px auto;
+    padding: 0 20px;
+    color: #222;
+    line-height: 1.6;
+  }
+  h1 {
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+  p.subtitle {
+    color: #555;
+    margin-top: 0;
+    margin-bottom: 32px;
   }
   .card {
-    background: #1e293b; padding: 40px 32px; border-radius: 16px;
-    max-width: 480px; width: 100%; text-align: center;
-    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
   }
-  h1 { margin: 0 0 8px; font-size: 22px; }
-  p  { color: #94a3b8; font-size: 14px; line-height: 1.5; }
-  a.btn {
-    display: inline-block; margin-top: 20px;
-    background: #3b82f6; color: white; text-decoration: none;
-    padding: 14px 28px; border-radius: 10px;
-    font-weight: 600; font-size: 16px;
-    transition: background .2s;
+  .card h2 {
+    font-size: 18px;
+    margin-top: 0;
   }
-  a.btn:hover { background: #2563eb; }
-  .steps {
-    text-align: left; margin-top: 28px; padding: 16px 20px;
-    background: #0f172a; border-radius: 10px;
-    font-size: 13px; color: #cbd5e1;
+  .card p {
+    color: #444;
+    font-size: 14px;
   }
-  .steps b { color: #e2e8f0; }
-  .file { font-size: 12px; color: #64748b; margin-top: 8px; word-break: break-all; }
+  a.button {
+    display: inline-block;
+    background-color: #1f4e8f;
+    color: white;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  a.button:hover {
+    background-color: #163a6b;
+  }
+  ol.steps {
+    font-size: 14px;
+    color: #444;
+    padding-left: 20px;
+  }
+  ol.steps li {
+    margin-bottom: 6px;
+  }
+  code {
+    background: #f3f3f3;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  footer {
+    margin-top: 40px;
+    font-size: 12px;
+    color: #888;
+  }
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>🗺️ My Map - 5 Layers</h1>
-    <p>Click below to download the map file, then open it in Google Earth Pro.</p>
-    <a class="btn" href="https://cdn.jsdelivr.net/gh/dushimepri-design/my-map-data@main/map_compressed.kmz" download>⬇️ Download Map</a>
-    <div class="steps">
-      <b>1.</b> Click the download button above.<br>
-      <b>2.</b> Find <code>map_compressed.kmz</code> in your Downloads folder.<br>
-      <b>3.</b> Double-click it — it opens in Google Earth Pro with all 5 layers.
-    </div>
-    <div class="file">https://cdn.jsdelivr.net/gh/dushimepri-design/my-map-data@main/map_compressed.kmz</div>
-  </div>
+
+<h1>Rwanda Map Data</h1>
+<p class="subtitle">National-scale GIS outputs packaged as a KMZ for Google Earth Pro. All administrative layers, infrastructure, and survey results included.</p>
+
+<div class="card">
+  <h2>Interactive Map (KMZ)</h2>
+  <p>The KMZ file contains all the Rwanda-wide layers of the survey output. Download it and open in Google Earth Pro to view the map interactively.</p>
+  <a class="button" href="https://cdn.jsdelivr.net/gh/dushimepri-design/my-map-data@main/map_compressed.kmz" download>⬇️ Download Map (KMZ)</a>
+</div>
+
+<div class="card">
+  <h2>How to open in Google Earth Pro</h2>
+  <ol class="steps">
+    <li>Click the <b>Download Map (KMZ)</b> button above.</li>
+    <li>Find <code>map_compressed.kmz</code> in your Downloads folder.</li>
+    <li>Double-click the file — it opens automatically in Google Earth Pro.</li>
+    <li>The map loads with all layers for Rwanda.</li>
+  </ol>
+</div>
+
+<footer>
+  Rwanda GIS Survey — Map Data.
+</footer>
+
 </body>
 </html>
