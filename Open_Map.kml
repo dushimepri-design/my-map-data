@@ -3,7 +3,7 @@
   <NetworkLink>
     <name>My Map - 5 Layers</name>
     <Link>
-      <href>https://raw.githubusercontent.com/dushimepri-design/my-map-data/main/map_compressed.kmz</href>
+      <href>https://cdn.jsdelivr.net/gh/dushimepri-design/my-map-data@main/map_compressed.kmz</href>
       <refreshMode>onInterval</refreshMode>
       <refreshInterval>3600</refreshInterval>
     </Link>
