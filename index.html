@@ -33,7 +33,6 @@
 </div>
 
 <script>
-// ---------- Base map: Satellite only ----------
 const satellite = L.tileLayer(
   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
   {
@@ -42,17 +41,9 @@ const satellite = L.tileLayer(
   }
 );
 
-// ---------- Map ----------
-const map = L.map("map", {
-  center: [-1.94, 29.87],
-  zoom: 8,
-  layers: [satellite]
-});
-
-// ---------- Layer control (overlays only) ----------
+const map = L.map("map", { center: [-1.94, 29.87], zoom: 8, layers: [satellite] });
 const overlays = {};
 
-// ---------- Load every GeoJSON layer ----------
 const layerData = [
     { name: "District_Point", file: "layer_0_district_point.geojson", color: "#e6194b" },
     { name: "District_Boundary", file: "layer_1_district_boundary.geojson", color: "#3cb44b" },
@@ -72,18 +63,12 @@ layerData.forEach(info => {
     .then(data => {
       const gj = L.geoJSON(data, {
         style: (f) => ({
-          color: info.color,
-          weight: 2,
-          opacity: 0.95,
-          fillColor: info.color,
-          fillOpacity: 0.15
+          color: info.color, weight: 2, opacity: 0.95,
+          fillColor: info.color, fillOpacity: 0.15
         }),
         pointToLayer: (f, latlng) => L.circleMarker(latlng, {
-          radius: 5,
-          fillColor: info.color,
-          color: "#ffffff",
-          weight: 1,
-          fillOpacity: 0.9
+          radius: 5, fillColor: info.color, color: "#ffffff",
+          weight: 1, fillOpacity: 0.9
         }),
         onEachFeature: (f, lyr) => {
           let html = "<b>" + info.name + "</b><hr style='margin:4px 0;border:0;border-top:1px solid #ddd'>";
@@ -104,11 +89,9 @@ layerData.forEach(info => {
     .catch(err => console.error("Failed to load " + info.file, err));
 });
 
-// ---------- Layer toggle control ----------
 L.control.layers(null, overlays, { collapsed: false, position: "topright" }).addTo(map);
 L.control.scale().addTo(map);
 
-// ---------- Fit to data after all layers load ----------
 setTimeout(() => {
   if (allBounds.length > 0) {
     let combined = allBounds[0];
