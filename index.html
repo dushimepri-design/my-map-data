@@ -9,14 +9,9 @@
 <style>
   html, body { margin: 0; height: 100%; font-family: Arial, Helvetica, sans-serif; }
   #map { position: absolute; inset: 0; }
-  #title {
-    position: absolute; z-index: 1000;
-    top: 10px; left: 50px;
-    background: rgba(255,255,255,0.95);
-    padding: 10px 16px; border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    max-width: 520px;
-  }
+  #title { position: absolute; z-index: 1000; top: 10px; left: 50px;
+    background: rgba(255,255,255,0.95); padding: 10px 16px; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-width: 520px; }
   #title h1 { font-size: 15px; margin: 0 0 2px 0; color: #1f4e8f; }
   #title p  { font-size: 12px; margin: 0; color: #555; }
   .leaflet-popup-content { font-size: 12px; max-height: 260px; overflow: auto; }
@@ -33,12 +28,10 @@
 </div>
 
 <script>
+// ---------- Base map: Satellite only ----------
 const satellite = L.tileLayer(
   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-  {
-    maxZoom: 19,
-    attribution: "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community"
-  }
+  { maxZoom: 19, attribution: "Tiles &copy; Esri" }
 );
 
 const map = L.map("map", { center: [-1.94, 29.87], zoom: 8, layers: [satellite] });
@@ -62,22 +55,17 @@ layerData.forEach(info => {
     .then(r => r.json())
     .then(data => {
       const gj = L.geoJSON(data, {
-        style: (f) => ({
-          color: info.color, weight: 2, opacity: 0.95,
-          fillColor: info.color, fillOpacity: 0.15
-        }),
+        style: (f) => ({ color: info.color, weight: 2, opacity: 0.95,
+          fillColor: info.color, fillOpacity: 0.15 }),
         pointToLayer: (f, latlng) => L.circleMarker(latlng, {
           radius: 5, fillColor: info.color, color: "#ffffff",
-          weight: 1, fillOpacity: 0.9
-        }),
+          weight: 1, fillOpacity: 0.9 }),
         onEachFeature: (f, lyr) => {
           let html = "<b>" + info.name + "</b><hr style='margin:4px 0;border:0;border-top:1px solid #ddd'>";
           if (f.properties) {
             for (const k in f.properties) {
               const v = f.properties[k];
-              if (v !== null && v !== undefined && v !== "") {
-                html += "<b>" + k + ":</b> " + v + "<br>";
-              }
+              if (v !== null && v !== undefined && v !== "") html += "<b>" + k + ":</b> " + v + "<br>";
             }
           }
           lyr.bindPopup(html);
