@@ -1,98 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Rwanda Map Data, Interactive Outputs</title>
+<meta charset="utf-8" />
+<title>Rwanda Map Data — Interactive Web Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-  body {
-    font-family: Arial, Helvetica, sans-serif;
-    max-width: 780px;
-    margin: 60px auto;
-    padding: 0 20px;
-    color: #222;
-    line-height: 1.6;
+  html, body { margin: 0; height: 100%; font-family: Arial, Helvetica, sans-serif; }
+  #map { position: absolute; inset: 0; }
+  #title {
+    position: absolute; z-index: 1000;
+    top: 10px; left: 50px;
+    background: rgba(255,255,255,0.95);
+    padding: 10px 16px; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    max-width: 520px;
   }
-  h1 {
-    font-size: 24px;
-    margin-bottom: 6px;
-  }
-  p.subtitle {
-    color: #555;
-    margin-top: 0;
-    margin-bottom: 32px;
-  }
-  .card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px 24px;
-    margin-bottom: 20px;
-  }
-  .card h2 {
-    font-size: 18px;
-    margin-top: 0;
-  }
-  .card p {
-    color: #444;
-    font-size: 14px;
-  }
-  a.button {
-    display: inline-block;
-    background-color: #1f4e8f;
-    color: white;
-    text-decoration: none;
-    padding: 10px 18px;
-    border-radius: 5px;
-    font-size: 14px;
-    margin-top: 8px;
-  }
-  a.button:hover {
-    background-color: #163a6b;
-  }
-  ol.steps {
-    font-size: 14px;
-    color: #444;
-    padding-left: 20px;
-  }
-  ol.steps li {
-    margin-bottom: 6px;
-  }
-  code {
-    background: #f3f3f3;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 13px;
-  }
-  footer {
-    margin-top: 40px;
-    font-size: 12px;
-    color: #888;
-  }
+  #title h1 { font-size: 15px; margin: 0 0 2px 0; color: #1f4e8f; }
+  #title p  { font-size: 12px; margin: 0; color: #555; }
+  .leaflet-popup-content { font-size: 12px; max-height: 260px; overflow: auto; }
+  .leaflet-popup-content b { color: #1f4e8f; }
+  .leaflet-control-layers { font-size: 13px; }
+  .leaflet-control-layers-list label { margin-bottom: 2px; }
 </style>
 </head>
 <body>
-
-<h1>Rwanda Map Data</h1>
-<p class="subtitle">National-scale GIS outputs packaged as a KMZ for Google Earth Pro. All administrative layers, infrastructure, and survey results included.</p>
-
-<div class="card">
-  <h2>Interactive Map (KMZ)</h2>
-  <p>The KMZ file contains all the Rwanda-wide layers of the survey output. Download it and open in Google Earth Pro to view the map interactively.</p>
-  <a class="button" href="https://cdn.jsdelivr.net/gh/dushimepri-design/my-map-data@main/map_compressed.kmz" download>⬇️ Download Map (KMZ)</a>
+<div id="map"></div>
+<div id="title">
+  <h1>Rwanda Map Data — Interactive Web Map</h1>
+  <p>Click layers on the right to toggle. Click any feature for details.</p>
 </div>
 
-<div class="card">
-  <h2>How to open in Google Earth Pro</h2>
-  <ol class="steps">
-    <li>Click the <b>Download Map (KMZ)</b> button above.</li>
-    <li>Find <code>map_compressed.kmz</code> in your Downloads folder.</li>
-    <li>Double-click the file — it opens automatically in Google Earth Pro.</li>
-    <li>The map loads with all layers for Rwanda.</li>
-  </ol>
-</div>
+<script>
+// ---------- Base map: Satellite only ----------
+const satellite = L.tileLayer(
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  {
+    maxZoom: 19,
+    attribution: "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community"
+  }
+);
 
-<footer>
-  Rwanda GIS Survey — Map Data.
-</footer>
+// ---------- Map ----------
+const map = L.map("map", {
+  center: [-1.94, 29.87],
+  zoom: 8,
+  layers: [satellite]
+});
 
+// ---------- Layer control (overlays only) ----------
+const overlays = {};
+
+// ---------- Load every GeoJSON layer ----------
+const layerData = [
+    { name: "District_Point", file: "layer_0_district_point.geojson", color: "#e6194b" },
+    { name: "District_Boundary", file: "layer_1_district_boundary.geojson", color: "#3cb44b" },
+    { name: "Closer to settlement", file: "layer_2_closer_to_settlement.geojson", color: "#ffe119" },
+    { name: "Likely special Village_isolated", file: "layer_3_likely_special_village_isolated.geojson", color: "#4363d8" },
+    { name: "Along the Road", file: "layer_4_along_the_road.geojson", color: "#f58231" }
+];
+
+const allBounds = [];
+
+layerData.forEach(info => {
+  const group = L.layerGroup().addTo(map);
+  overlays[info.name] = group;
+
+  fetch(info.file)
+    .then(r => r.json())
+    .then(data => {
+      const gj = L.geoJSON(data, {
+        style: (f) => ({
+          color: info.color,
+          weight: 2,
+          opacity: 0.95,
+          fillColor: info.color,
+          fillOpacity: 0.15
+        }),
+        pointToLayer: (f, latlng) => L.circleMarker(latlng, {
+          radius: 5,
+          fillColor: info.color,
+          color: "#ffffff",
+          weight: 1,
+          fillOpacity: 0.9
+        }),
+        onEachFeature: (f, lyr) => {
+          let html = "<b>" + info.name + "</b><hr style='margin:4px 0;border:0;border-top:1px solid #ddd'>";
+          if (f.properties) {
+            for (const k in f.properties) {
+              const v = f.properties[k];
+              if (v !== null && v !== undefined && v !== "") {
+                html += "<b>" + k + ":</b> " + v + "<br>";
+              }
+            }
+          }
+          lyr.bindPopup(html);
+        }
+      }).addTo(group);
+      const b = gj.getBounds();
+      if (b.isValid()) allBounds.push(b);
+    })
+    .catch(err => console.error("Failed to load " + info.file, err));
+});
+
+// ---------- Layer toggle control ----------
+L.control.layers(null, overlays, { collapsed: false, position: "topright" }).addTo(map);
+L.control.scale().addTo(map);
+
+// ---------- Fit to data after all layers load ----------
+setTimeout(() => {
+  if (allBounds.length > 0) {
+    let combined = allBounds[0];
+    for (let i = 1; i < allBounds.length; i++) combined = combined.extend(allBounds[i]);
+    map.fitBounds(combined, { padding: [30, 30] });
+  }
+}, 1500);
+</script>
 </body>
 </html>
